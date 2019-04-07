@@ -1,31 +1,68 @@
 //var APILink = "https://data.austintexas.gov/resource/csid-srda.json";
-var geojson = new L.GeoJSON.AJAX("Zipcodes.geojson");     
-var geojson;
-geojson.addTo(map);
+//var geojson = new L.GeoJSON.AJAX("Zipcodes.geojson");     
+//var geojson;
+//geojson.addTo(map);
+
+
+var Zipcodes = new L.LayerGroup(); 
+//GITHUB RAW that's the way!
+url2 = "https://raw.githubusercontent.com/veyEskelson/maptest/master/js/Zipcodes.geojson";
+// for the faultlines
+//fetch("tectonicplates-master/GeoJSON/PB2002_boundaries.json")
+//  .then(function(data){
+d3.json(url2, function(data){
+   console.log(typeof(data));
+   L.geoJson(data, {
+     // Style each feature (in this case a region)
+     style: function(feature) {
+       return {
+         color: "white",
+
+         fillOpacity: 0.5,
+         weight: 1.5
+     }
+   }
+   }).addTo(Zipcodes);
+ });
+
   // Grab data with d3
  // d3.json(geojson, function(data) {
   //  createFeatures(data.features);
   //});
 
-function createFeatures(zipcodeData) {
-  // Define a function we want to run once for each feature in the features array
-  // Give each feature a popup describing the place and time of the earthquake
-  function popupBinder(feature, layer) {
-    layer.bindPopup("<h3>" + feature.properties.place +
-    layer.bindPopup(feature.properties.name + ", " + feature.properties.zipcode));
-  }
-  // Create a GeoJSON layer containing the features array on the earthquakeData object
-  // Run the onEachFeature function once for each piece of data in the array
-  var zipcodes = L.geoJSON(zipcodeData, {
-    "onEachFeature": popupBinder
-  });
+// function createFeatures(zipcodeData) {
+//   // Define a function we want to run once for each feature in the features array
+//   // Give each feature a popup describing the place and time of the earthquake
+//   function popupBinder(feature, layer) {
+//     layer.bindPopup("<h3>" + feature.properties.place +
+//     layer.bindPopup(feature.properties.name + ", " + feature.properties.zipcode));
+//   }
+//   // Create a GeoJSON layer containing the features array on the earthquakeData object
+//   // Run the onEachFeature function once for each piece of data in the array
+//   var zipcodes = L.geoJSON(zipcodeData, {
+//     "onEachFeature": popupBinder
+//   });
  
-    // Sending our earthquakes layer to the createMap function
-    createMap(zipcodes);
+//     // Sending our earthquakes layer to the createMap function
+//     createMap(zipcodes);
 
-}
+// }
   
-function createMap(zipcodes) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//function createMap(zipcodes) {
 // Define streetmap and darkmap layers
 var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
@@ -71,7 +108,7 @@ var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.pn
 
 //Create overlay object to hold our overlay layer
 var overlayMaps = {
-  zipcodes: zipcodes
+  zipcodes: Zipcodes
 };
 
 // Create our map, 
@@ -79,7 +116,7 @@ var overlayMaps = {
 var myMap = L.map("map", {
   center: [30.287113,-97.750832],
   zoom: 11,
-  layers: [streetmap,darkmap, lightmap,satellite,outdoors, zipcodes]
+  layers: [streetmap,darkmap, lightmap,satellite,outdoors, Zipcodes]
 });
 
 
@@ -90,7 +127,7 @@ L.control.layers(baseMaps, overlayMaps, {
   collapsed: false
  }).addTo(myMap);
 
-}
+//}
 
 
 
