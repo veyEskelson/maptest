@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <!-- Load jQuery -->
+        <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+
+        <!-- Load Leaflet -->
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+        <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+
+        <!--Turfs-->
+        <script src="https://unpkg.com/@turf/turf@3.5.2/turf.min.js"></script>
+        <!-- Load Stamen's library -->
+        <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.4"></script>
+        <link href="https://fonts.googleapis.com/css?family=Acme|Asap|Asap+Condensed|Baloo|Baloo+Chettan|Indie+Flower|Jacques+Francois+Shadow|Londrina+Shadow|Maven+Pro|Shadows+Into+Light|Signika|Varela+Round|Vast+Shadow" rel="stylesheet">
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+            #map {
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+
+        <script>
+            /*
+             * Keep the map variable out here so we can access it from
+             * the console.
+             */
+            var map;
+
+            var icons = {
+                Dog: L.icon({
+                    iconUrl: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/whatsapp/186/dog-face_1f436.png',
+                    iconSize: [32, 37],
+                    iconAnchor: [16, 37],
+                    popupAnchor: [0, -28]
+            }),
+                 Cat: L.icon({
+                    iconUrl: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/whatsapp/186/cat-face_1f431.png',
+                    iconSize: [32, 37],
+                    iconAnchor: [16, 37],
+                    popupAnchor: [0, -28]
+            }),
+                 Other: L.icon({
+                    iconUrl: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/whatsapp/186/dragon-face_1f432.png',
+                    iconSize: [32, 37],
+                    iconAnchor: [16, 37],
+                    popupAnchor: [0, -28]
+            }),
+                 Bird: L.icon({
+                    iconUrl: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/samsung/161/bird_1f426.png',
+                    iconSize: [32, 37],
+                    iconAnchor: [16, 37],
+                    popupAnchor: [0, -28]
+            }),
+                 Tree: L.icon({
+                    iconUrl: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/whatsapp/186/deciduous-tree_1f333.png',
+                    iconSize: [32, 37],
+                    iconAnchor: [16, 37],
+                    popupAnchor: [0, -28]
+            }),
+                 Office: L.icon({
+                    iconUrl: 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/whatsapp/186/office-building_1f3e2.png',
+                    iconSize: [32, 37],
+                    iconAnchor: [16, 37],
+                    popupAnchor: [0, -11]
+            }),
+        };
+            
+            urlparks ="https://raw.githubusercontent.com/ziangzhang10/data_bootcamp_project2/master/Data/City%20of%20Austin%20Parks.geojson";
+            d3.json(urlparks, function(data){
+                console.log(typeof(data));
+                L.geoJson(data, {
+                // Style each feature (in this case a region)
+                style: function(feature) {
+                    return {
+                    color: "green",
+            
+                    fillOpacity: 0.5,
+                    weight: 1.5
+                }
+                }
+                }).addTo(map);
+            });
+
+           // urloffleash ="https://raw.githubusercontent.com/ziangzhang10/data_bootcamp_project2/master/Data/Off-%20Leash%20Areas.geojson";
+           urloffleash = "https://raw.githubusercontent.com/veyEskelson/maptest/master/data/Off-%20Leash%20Areas.geojson";
+            d3.json(urloffleash, function(data){
+                    console.log(typeof(data));
+                    L.geoJson(data, {
+                        onEachFeature: function (feature, layer) {
+                            layer.bindPopup(feature.properties.name);
+                        },
+                        pointToLayer: function (feature, latlng) {
+                            return L.marker(latlng, 
+                               // {icons:Tree}
+                               {icon: icons[feature.properties.name]}
+                                )
+                            
+                        },        
+                    }).addTo(map);
+            });
+
+            // $.getJSON("rodents.geojson",function(data){
+            // var ratIcon = L.icon({
+            //     iconUrl: 'rat.gif',
+            //     iconSize: [50,40]
+            // }); 
+            // L.geoJson(data  ,{
+            //     pointToLayer: function(feature,latlng){
+            //     return L.marker(latlng,{icon: ratIcon});
+            //     }
+            // }  ).addTo(map);
+            // });
+
+
+            var Zipcodes = new L.LayerGroup(); 
+            //GITHUB RAW that's the way!
+            url2 = "https://raw.githubusercontent.com/veyEskelson/maptest/master/js/Zipcodes.geojson";
+            // for the faultlines
+            //fetch("tectonicplates-master/GeoJSON/PB2002_boundaries.json")
+            //  .then(function(data){
+            d3.json(url2, function(data){
+            console.log(typeof(data));
+            L.geoJson(data, {
+                // Style each feature (in this case a region)
+                style: function(feature) {
+                return {
+                    color: "pink",
+
+                    fillOpacity: 0.5,
+                    weight: 1.5
+                }
+            }
+            }).addTo(map);
+            });
+
+            // var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+            // attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+            // maxZoom: 18,
+            // id: "mapbox.streets",
+            // accessToken: API_KEY
+            // });
+            // var lightmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+            // attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+            // maxZoom: 18,
+            // id: "mapbox.light",
+            // accessToken: API_KEY
+            // });
+
+            // var darkmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+            //     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+            //     maxZoom: 18,
+            //     id: "mapbox.dark",
+            //     accessToken: API_KEY
+            // });
+            // var satellite = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+            //     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+            //     maxZoom: 18,
+            //     id: "mapbox.satellite",
+            //     accessToken: API_KEY
+            // });
+
+            // var outdoors = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+            //     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+            //     maxZoom: 18,
+            //     id: "mapbox.outdoors",
+            //     accessToken: API_KEY
+            // });
+
+            // // Define a baseMaps object to hold our base layers
+            // var baseMaps = {
+            //     "Street map": streetmap,
+            //     "Light Map": lightmap,
+            //     "Dark Map": darkmap,
+            //     "Satellite": satellite,
+            //     "Outdoors": outdoors
+            // };
+
+            // //Create overlay object to hold our overlay layer
+            // var overlayMaps = {
+            // zipcodes: Zipcodes
+            // };
+
+            // // Create our map, 
+            // // Create a map object
+            // var myMap = L.map("map", {
+            // center: [30.287113,-97.750832],
+            // zoom: 11,
+            // layers: [streetmap,darkmap, lightmap,satellite,outdoors, Zipcodes]
+            // });
+
+
+            // // Create a layer control
+            // // Pass in our baseMaps and overlayMaps
+            // // Add the layer control to the map
+            // L.control.layers(baseMaps, overlayMaps, {
+            // collapsed: false
+            // }).addTo(myMap);
+
+
+            $(document).ready(function () {
+                map = L.map('map').setView([30.287113,-97.750832], 11);
+
+                var layer = new L.StamenTileLayer("toner");
+                map.addLayer(layer);
+                var url = "https://raw.githubusercontent.com/ziangzhang10/data_bootcamp_project2/master/Data/Animals_database.geojson";
+                //var url = "https://raw.githubusercontent.com/ziangzhang10/data_bootcamp_project2/master/Data/Off-%20Leash%20Areas.geojson";
+               //  var url = "https://data.austintexas.gov/resource/wter-evkm.geojson";
+                //var url ="https://data.austintexas.gov/resource/csid-srda.json";
+                //var url = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=" + "2014-01-02&maxlongitude=-69.52148437&minlongitude=-123.83789062&maxlatitude=48.74894534&minlatitude=25.16517337";
+                // $.getJSON('http://eric.cartodb.com/api/v2/sql?q=SELECT * FROM sign_application_filings&format=GeoJSON', function (data) {
+                $.getJSON(url, function (data) {
+                    L.geoJson(data, {
+                        onEachFeature: function (feature, layer) {
+                            layer.bindPopup(feature.properties.animal_type);
+                        },
+
+                        /*
+                         * When each feature is loaded from the GeoJSON this
+                         * function is called. Here we create a cicle marker
+                         * for the feature and style the circle marker.
+                         */
+                        pointToLayer: function (feature, latlng) {
+                            return L.marker(latlng, {
+                              icon: icons[feature.properties.animal_type]
+                              
+                            });
+                        },
+                    }).addTo(map);
+                });
+
+            });
+        </script>
+    </head>
+    <body>
+        <div id="map"></div>
+    </body>
+</html>
